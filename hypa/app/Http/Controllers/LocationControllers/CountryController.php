@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\LocationControllers;
-
+use App\ApiResponse;
 use App\Models\Location\Country;
 use App\Models\Location\City;
 use App\Models\Location\State;
@@ -10,13 +10,14 @@ use Illuminate\Http\Request;
 
 class CountryController extends Controller
 {
+    /** @return Countries with the states and cities  */
     public function index(){
         $countries=Country::all();
         foreach ($countries as $country) {
             $this->loadCountryStates($country);
         }
-
-        return response()->json($countries);
+        $response = new ApiResponse(ApiResponse::$SUCCESS,'Sucess!',$countries);
+        return response()->json($response);
     }
 
     private function loadCountryStates($country){
@@ -30,9 +31,5 @@ class CountryController extends Controller
     private function loadStateCities($state){
         $cities=City::where('state_id',$state->id)->get();
         $state->cities=$cities;
-    }
-
-    public function getCityCount(){
-        return City::where('state_id',2)->get()->count();
     }
 }
